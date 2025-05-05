@@ -17,3 +17,23 @@ export async function cat(filePath, currentDir) {
         throw err;
     });
 }
+export async function add(fileName, currentDir) {
+    const filePath = path.resolve(currentDir, fileName);
+
+    try {
+        await fs.promises.writeFile(filePath, '');
+        console.log(`File "${fileName}" created successfully.`);
+    } catch (err) {
+        console.error('Operation failed');
+    }
+}
+export async function mkdir(dirName, currentDir) {
+    const dirPath = path.resolve(currentDir, dirName);
+
+    try {
+        await fs.promises.mkdir(dirPath);
+        console.log(`Directory "${dirName}" created successfully.`);
+    } catch (err) {
+        console.error('Operation failed');
+    }
+}
