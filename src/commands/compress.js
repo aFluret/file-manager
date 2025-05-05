@@ -1,23 +1,39 @@
-import fs from 'fs';
-import path from 'path';
 import { createReadStream, createWriteStream } from 'fs';
-import { createBrotliCompress } from 'zlib';
+import { createBrotliCompress, createBrotliDecompress } from 'zlib';
+import path from 'path';
 
-export async function compress(src, dest, currentDir) {
-    const srcPath = path.resolve(currentDir, src);
-    const destPath = path.resolve(currentDir, dest);
+export async function compress(sourcePath, destinationPath, currentDir) {
+    const sourceFullPath = path.resolve(currentDir, sourcePath);
+    const destinationFullPath = path.resolve(currentDir, destinationPath + '.br');
 
-    const readStream = createReadStream(srcPath);
-    const writeStream = createWriteStream(destPath + '.br');
-    const brotli = createBrotliCompress();
+    try {
+        const readStream = createReadStream(sourceFullPath);
+        const writeStream = createWriteStream(destinationFullPath);
+        const brotli = createBrotliCompress();
 
-    readStream
-        .pipe(brotli)
-        .pipe(writeStream)
-        .on('finish', () => {
-            console.log('Compression completed.');
-        })
-        .on('error', (err) => {
-            throw err;
-        });
+        readStream.pipe(brotli).pipe(writeStream);
+
+        writeStream.on('finish', () => console.log('File compressed successfully.'));
+        writeStream.on('error', () => console.error('Operation failed'));
+    } catch (err) {
+        console.error('Operation failed');
+    }
+}
+
+export async function decompress(sourcePath, destinationPath, currentDir) {
+    const sourceFullPath = path.resolve(currentDir, sourcePath);
+    const destinationFullPath = path.resolve(currentDir, destinationPath);
+
+    try {
+        const readStream = createReadStream(sourceFullPath);
+        const writeStream = createWriteStream(destinationFullPath);
+        const brotli = createBrotliDecompress();
+
+        readStream.pipe(brotli).pipe(writeStream);
+
+        writeStream.on('finish', () => console.log('File decompressed successfully.'));
+        writeStream.on('error', () => console.error('Operation failed'));
+    } catch (err) {
+        console.error('Operation failed');
+    }
 }
