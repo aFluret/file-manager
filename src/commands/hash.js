@@ -1,4 +1,3 @@
-// src/commands/hash.js
 import { createReadStream } from 'fs';
 import { createHash } from 'crypto';
 import path from 'path';
